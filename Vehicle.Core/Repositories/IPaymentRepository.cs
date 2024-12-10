@@ -11,9 +11,9 @@ namespace Vehicle.Core.Repositories
     {
         public List<Payment> Get();
         public double Get(int code);
-        public Payment Add(Payment payment);
         public void Post(Payment payment);
-        public void Put(int code, Payment payment);
-        public void Delete(int id);
+        public double Put(int code, Payment payment);
+
+        //void Delete(Payment paymentToDelete);
     }
 }

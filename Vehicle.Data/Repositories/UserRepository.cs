@@ -5,14 +5,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Vehicle.Core.Repositories;
 
 namespace Vehicle.Data.Repositories
 {
-    public class UserReposirory : IUserService
+    public class UserRepository : IUserRepository
     {
         private DataContext _context;
 
-        public UserReposirory(DataContext context)
+        public UserRepository(DataContext context)
         {
             _context = context;
         }

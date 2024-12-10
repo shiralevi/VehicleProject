@@ -6,18 +6,21 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
+using Vehicle.Core.Repositories;
 using Vehicle.Core.Services;
 
 namespace Vehicle.Data.Repositories
 {
-    public class PaymentReposirory : IPaymentService
+    public class PaymentRepository : IPaymentRepository
     {
         private DataContext _context;
 
-        public PaymentReposirory(DataContext context)
+        public PaymentRepository(DataContext context)
         {
             _context = context;
         }
+
+
         public List<Payment> Get()
         {
             return _context.payments;
@@ -51,10 +54,11 @@ namespace Vehicle.Data.Repositories
 
         }
 
-        public void Delete(int id)
-        {
+        //public void Delete(int id)
+        //{
 
-        }
+
+        //}
 
     }   }
 

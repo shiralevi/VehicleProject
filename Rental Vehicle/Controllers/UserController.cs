@@ -1,8 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 using Rental_Vehicle.Enties;
-
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+using Vehicle.Core.Services;
 
 namespace Rental_Vehicle.Controllers
 {
@@ -10,64 +8,78 @@ namespace Rental_Vehicle.Controllers
     [ApiController]
     public class UserController : ControllerBase
     {
-        private readonly DataContext context;
-        public UserController(DataContext data)
-        {
-            context = data;
-        }
+        private IUserService _userService;
 
+        public UserController(IUserService userService)
+        {
+            _userService = userService;
+        }
 
         [HttpGet]
         public IEnumerable<User> Get()
         {
-            return context.users;
+            return _userService.Get();
         }
 
-        //מציאת משתמש
+        // מציאת משתמש
         [HttpGet("{tel}")]
-        public User GetUser(String tel)
+        public ActionResult<User> GetUser(string tel)
         {
-            var index = context.users.FindIndex(e => e.tel.Equals(tel));
-            if (index != -1)
-                return context.users[index];
-            return null;
-
-        }
-
-        //עדכון משתמש
-        [HttpPut("{tel}")]
-        public void Put(String tel, [FromBody] User value)
-        {
-            var index = context.users.FindIndex(e => e.tel.Equals(tel));
-            if (index != -1)
+            User user = _userService.GetUser(tel);
+            if (user == null)
             {
-                context.users[index].name = value.name;
-                context.users[index].tel = value.tel;
+                return NotFound();
             }
-            Console.WriteLine("Not sucssed");
-
+            return Ok(user);
         }
 
-
-        //הוספת משתמש
-        [HttpPost]
-        public ActionResult Post([FromBody] User value)
+        // עדכון משתמש
+        [HttpPut("{tel}")]
+        public ActionResult UpdateUser(string tel, [FromBody] User value)
         {
-            context.users.Add(value);
-            return value;
+            try
+            {
+                _userService.UpdateUser(tel, value);
+                return NoContent(); // מחזיר 204 כאשר העדכון הצליח
+            }
+            catch (Exception ex)
+            {
+                return BadRequest($"Error updating user: {ex.Message}");
+            }
+        }
 
+        // הוספת משתמש
+        [HttpPost]
+        public ActionResult<User> AddUser([FromBody] User user)
+        {
+            if (user == null)
+            {
+                return BadRequest("User cannot be null");
+            }
+
+            try
+            {
+                var result = _userService.AddUser(user); // נניח שיש שיטה להוסיף משתמש
+                return CreatedAtAction(nameof(GetUser), new { tel = result.Tel }, result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest($"Error adding user: {ex.Message}");
+            }
         }
 
         // מחיקת משתמש
         [HttpDelete("{tel}")]
-        public void Delete(string tel)
+        public ActionResult DeleteUser(string tel)
         {
-            var index = context.users.FindIndex(e => e.tel.Equals(tel));
-            if (index != -1)
-                context.users.Remove(context.users[index]);
-            else
-                Console.WriteLine("Not sucssed");
+            var user = _userService.GetUser(tel);
+            if (user == null)
+            {
+                return NotFound();
+            }
 
+            _userService.DeleteUser(tel);
+            return NoContent();
         }
     }
 }

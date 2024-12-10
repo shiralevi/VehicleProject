@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Vehicle.Core.Enties;
+using Vehicle.Core.Services;
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace Rental_Vehicle.Controllers
@@ -9,37 +10,38 @@ namespace Rental_Vehicle.Controllers
     [ApiController]
     public class VehicleController : ControllerBase
     {
+        private IVehicleService _vehicleService;
 
-
-        private readonly DataContext context;
-        public VehicleController(DataContext data)
+        public VehicleController(IVehicleService vehicleService)
         {
-            context = data;           
+            _vehicleService = vehicleService;
         }
-
-        // GET: api/<VaehicleController>
+        // GET: api/<VehicleController>
         [HttpGet]
         public IEnumerable<Vehicles> Get()
         {
-            return context.vehicles;
+            return _vehicleService.Get(); // מחזיר את הרשימה
         }
 
-        // GET api/<VaehicleController>/5
-        [HttpGet("{codeVehicle}")]
-        public string Get(int codeVehicle)
+        // GET api/<VehicleController>/5
+        [HttpGet("{type}")]
+        public ActionResult<Vehicles> GetVehicle(string type)
         {
-            var index = context.vehicles.FindIndex(e => e.code == codeVehicle);
-            if (index != -1)
-                return context.vehicles[index].type;
-
-            return null;
+            var vehicle = _vehicleService.GetVehicle(type);
+            if (vehicle == null)
+            {
+                return NotFound(); // מחזיר תשובה אם הרכב לא נמצא
+            }
+            return Ok(vehicle); // מחזיר את הרכב
         }
+
+
 
         // POST api/<VaehicleController>
         [HttpPost]
         public void Post([FromBody] Vehicles vehicle)
         {
-            context.vehicles.Add(vehicle);
+            _vehicleService.Post(vehicle);
 
         }
 
@@ -47,22 +49,16 @@ namespace Rental_Vehicle.Controllers
         [HttpPut("{id}")]
         public void Put(int codeVeicle, [FromBody] Vehicles vehicle)
         {
-            var index = context.vehicles.FindIndex(e => e.code == codeVeicle);
-            if (index != -1) { }
-             context.vehicles[index].type = vehicle.type;
-            context.vehicles[index].code = vehicle.code;
+            _vehicleService.Put(codeVeicle, vehicle);
         }
 
-       //מחיקה לפי קוד
-        [HttpDelete("{id}")]
-        public void Delete(int codeVehicle)
-        {
-            var index = context.vehicles.FindIndex(e => e.code==codeVehicle);
-            if (index != -1)
-                context.vehicles.Remove(context.vehicles[index]);
-            else
-                Console.WriteLine("Not sucssed");
+        // //מחיקה לפי קוד
+        //  [HttpDelete("{id}")]
+        //  public ActionResult Delete(int codeVehicle)
+        // {
 
-        }
+
+        //  }
+
     }
 }

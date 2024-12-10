@@ -13,49 +13,63 @@ namespace Rental_Vehicle.Controllers
         private IPaymentService _paymentService;
         public PaymentController(IPaymentService paymentService)
         {
-            _paymentService=paymentService;
+            _paymentService = paymentService;
         }
 
         [HttpGet]
         public IEnumerable<Payment> Get()
         {
-           return _paymentService.Get();
+            return _paymentService.Get();
         }
 
         // GET api/<PaymentController>/5
         [HttpGet("{id}")]
-        public ActionResult Get(int code)
+        public ActionResult Get(int id)
         {
-          Payment paymant= _paymentService.GetPayment(code);
-          
+            Payment payment = _paymentService.GetPayment(id);
+            if (payment == null)
+            {
+                return NotFound();
+            }
+            return Ok(payment);
         }
+
 
         // POST api/<PaymentController>
         [HttpPost]
         public void Post([FromBody] Payment payment)
         {
-            context.payments.Add(payment);
+            _paymentService.AddPayment(payment);
         }
 
         // PUT api/<PaymentController>/5
         [HttpPut("{id}")]
-        public double Put(int code, [FromBody] Payment payment)
+
+        public ActionResult Put(int id, [FromBody] Payment payment)
         {
-            var index = context.payments.FindIndex(e => e.code == code);
-            if (index != -1)
+
+            var result = _paymentService.UpdatePayment(id, payment);
+            if (result == null)
             {
-
-                return context.payments[index].price;
+                return NotFound($"Payment with ID {id} not found.");
             }
-          return 0;
-        
+
+            return Ok(result);
         }
 
-        // DELETE api/<PaymentController>/5
+
+
+
         [HttpDelete("{id}")]
-        public void Delete(int id)
+        public ActionResult Delete(int id)
         {
-
+            var success = _paymentService.DeletePayment(id);
+            if (!success)
+            {
+                return NotFound($"Payment with ID {id} not found.");
+            }
+            return NoContent();
         }
+
     }
 }

@@ -14,6 +14,6 @@ namespace Vehicle.Core.Services
         public Payment GetPayment(int id);
         public Payment AddPayment(Payment payment);
         public bool UpdatePayment(int code, Payment payment);
-        
+        //public bool DeletePayment(int id);
     }
 }

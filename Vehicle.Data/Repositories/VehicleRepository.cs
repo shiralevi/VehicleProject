@@ -6,24 +6,25 @@ using System.Text;
 using System.Threading.Tasks;
 using Vehicle.Core.Enties;
 using Vehicle.Core.Repositories;
+using Vehicle.Core.Services;
 
 namespace Vehicle.Data.Repositories
 {
-    public class VehicleReposirory : IVehicleRepository
+    public class VehicleRepository : IVehicleRepository
     {
         private DataContext _context;
 
-        public VehicleReposirory(DataContext context)
+        public VehicleRepository(DataContext context)
         {
             _context = context;
         }
-      
+
         public List<Vehicles> Get()
         {
             return _context.vehicles;
         }
 
-      
+
         public string Get(int codeVehicle)
         {
             var index = _context.vehicles.FindIndex(e => e.code == codeVehicle);
@@ -33,7 +34,7 @@ namespace Vehicle.Data.Repositories
             return null;
         }
 
-        
+
         public void Post(Vehicles vehicle)
         {
             _context.vehicles.Add(vehicle);
@@ -48,7 +49,7 @@ namespace Vehicle.Data.Repositories
             _context.vehicles[index].code = vehicle.code;
         }
 
-      
+
         public void Delete(int codeVehicle)
         {
             var index = _context.vehicles.FindIndex(e => e.code == codeVehicle);
@@ -58,6 +59,7 @@ namespace Vehicle.Data.Repositories
                 Console.WriteLine("Not sucssed");
 
         }
+
+
     }
-}
 }

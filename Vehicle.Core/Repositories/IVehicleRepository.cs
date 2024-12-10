@@ -11,10 +11,7 @@ namespace Vehicle.Core.Repositories
     {
         public List<Vehicles> Get();
         public string Get(int codeVehicle);
-
-
         public void Post(Vehicles vehicle);
-
         public void Put(int codeVeicle, Vehicles vehicle);
         public void Delete(int codeVehicle);
 
